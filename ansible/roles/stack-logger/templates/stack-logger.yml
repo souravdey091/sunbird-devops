@@ -2,7 +2,13 @@ version: '3.3'
 
 services:
   kibana:
-    image: kibana:4.6
+    image: {{ kibana_image }}
+    deploy:
+      resources:
+        reservations:
+          memory: "{{ logger_kibana_reservation_memory }}"
+        limits:
+          memory: "{{ logger_kibana_limit_memory }}"
     environment:
       - LOGSPOUT=ignore
     ports:
@@ -40,6 +46,11 @@ services:
     command: syslog+tcp://logger_logstash:51415
     deploy:
       mode: global
+      resources:
+        reservations:
+          memory: "{{ logger_logspout_reservation_memory }}"
+        limits:
+          memory: "{{ logger_logspout_limit_memory }}"
     environment:
       - SYSLOG_FORMAT=rfc3164
       - INACTIVITY_TIMEOUT=1m
@@ -50,6 +61,12 @@ services:
 
   oauth:
     image: rjshrjndrn/oauth2-proxy:2.2
+    deploy:
+      resources:
+        reservations:
+          memory: "{{ logger_oauth_reservation_memory }}"
+        limits:
+          memory: "{{ logger_oauth_limit_memory }}"
     command: |
       -cookie-secure=false
       -upstream=http://proxy_proxy/oauth2

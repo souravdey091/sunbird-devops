@@ -63,6 +63,11 @@ services:
             placement:
                 constraints:
                     - "node.labels.alertmanager==1"
+            resources:
+              reservations:
+                memory: "{{ alertmanager_reservation_memory }}"
+              limits:
+                memory: "{{ alertmanager_limit_memory }}"
 
     blackbox-exporter:
         image: quay.io/prometheus/blackbox-exporter:v0.8.1
@@ -294,9 +299,20 @@ services:
             placement:
                 constraints:
                     - "node.labels.grafana==1"
+            resources:
+              reservations:
+                memory: "{{ grafana_reservation_memory }}"
+              limits:
+                memory: "{{ grafana_limit_memory }}"
 
     cassandra_jmx_exporter:
         image: sunbird/cassandra_jmx_exporter:0.11
+        deploy:
+            resources:
+                reservations:
+                    memory: "{{ jsonpath_exporter_reservation_memory }}"
+                limits:
+                    memory: "{{ jsonpath_exporter_limit_memory }}"
         ports:
             - "5556:5556"
         environment:
@@ -337,6 +353,11 @@ services:
         command: syslog+tcp://monitor_logstash:51415?filter.name=*_proxy.*
         deploy:
             mode: global
+            resources:
+                reservations:
+                    memory: "{{ monitor_logspout_reservation_memory }}"
+                limits:
+                    memory: "{{ monitor_logspout_limit_memory }}"
         environment:
             - SYSLOG_FORMAT=rfc3164
         depends_on:
